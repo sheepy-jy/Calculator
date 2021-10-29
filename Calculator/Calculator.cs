@@ -8,8 +8,6 @@ namespace CalculatorNS
         public static decimal Calculate(string input)
         {
             decimal result = 0;
-
-            // Logic here
             var array = input.Split(" ");
             var currentOperator = "";
             int openBracketCount = 0;
