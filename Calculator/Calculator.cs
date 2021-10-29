@@ -12,14 +12,14 @@ namespace CalculatorNS
             // Logic here
             var array = input.Split(" ");
             var currentOperator = "";
-
-            int bracketLevel = 0;
+            int openBracketCount = 0;
+            int closeBracketCount = 0;
             string insideBracketExpression = "";
 
             for (int i = 0; i < array.Length; i++)
             {
                 // If not inside bracket, do calculation
-                if (bracketLevel == 0)
+                if (openBracketCount == 0)
                 {
                     if (result == 0 && currentOperator == string.Empty && decimal.TryParse(array[i], out decimal parsedDouble))
                     {
@@ -38,28 +38,40 @@ namespace CalculatorNS
                         continue;
                     }
                 }
-                // If inside bracket, add expression to insideBracketExpression
-                else
-                {
-                    // ignore open & close bracket so they are not included in 
-                    // expression insideBracketExpression for calculation
-                    if (array[i] != "(" && array[i] != ")") { insideBracketExpression += " " + array[i]; }
-                }
 
                 if (array[i] == "(")
                 {
-                    bracketLevel += 1;
-                    continue;
+                    openBracketCount += 1;
+
+                    // If 1 openBracket, dun add ( into insideBracketExpression
+                    if (openBracketCount == 1) { continue; }
                 }
 
                 if (array[i] == ")")
                 {
-                    bracketLevel -= 1;
-                    decimal innerBracketResult = Calculate(insideBracketExpression);
-                    //handle if bracket hits before any operator is assigned
-                    result = currentOperator == "" ?
-                        innerBracketResult :
-                        CalculateWithOperator(currentOperator, innerBracketResult, result);
+                    closeBracketCount += 1;
+                    // If openBracketCount == closeBracketCount, then run recursion to calculate
+                    if (openBracketCount == closeBracketCount)
+                    {
+                        decimal innerBracketResult = Calculate(insideBracketExpression);
+
+                        // If else to Handle if bracket hits before any operator is assigned
+                        result = currentOperator == "" ?
+                            innerBracketResult :
+                            CalculateWithOperator(currentOperator, innerBracketResult, result);
+
+                        // Remove bracket count since out of bracket now
+                        openBracketCount -= 1;   
+                        closeBracketCount -= 1;
+                        // Have to clear expression to handle multiple seperate nested expression
+                        insideBracketExpression = "";   
+                    }
+                }
+
+                // If inside bracket, add expression to insideBracketExpression
+                if (openBracketCount != 0)
+                {
+                    insideBracketExpression += " " + array[i];
                 }
             }
             return result;

@@ -20,8 +20,8 @@ namespace Calculator.Tests
             decimal result2 = CalculatorNS.Calculator.Calculate(statement2);
 
             // Assert
-            Assert.AreEqual(result, expectedResult);
-            Assert.AreEqual(result2, expectedResult2);
+            Assert.AreEqual(expectedResult, result);
+            Assert.AreEqual(expectedResult2, result2);
         }
 
         [TestMethod]
@@ -35,7 +35,7 @@ namespace Calculator.Tests
             decimal result = CalculatorNS.Calculator.Calculate(statement);
 
             // Assert
-            Assert.AreEqual(result, expectedResult);
+            Assert.AreEqual(expectedResult, result);
         }
 
         [TestMethod]
@@ -49,7 +49,7 @@ namespace Calculator.Tests
             decimal result = CalculatorNS.Calculator.Calculate(statement);
 
             // Assert
-            Assert.AreEqual(result, expectedResult);
+            Assert.AreEqual(expectedResult, result);
         }
 
         [TestMethod]
@@ -63,7 +63,7 @@ namespace Calculator.Tests
             decimal result = CalculatorNS.Calculator.Calculate(statement);
 
             // Assert
-            Assert.AreEqual(result, expectedResult);
+            Assert.AreEqual(expectedResult, result);
         }
 
         [TestMethod]
@@ -77,7 +77,7 @@ namespace Calculator.Tests
             decimal result = CalculatorNS.Calculator.Calculate(statement);
 
             // Assert
-            Assert.AreEqual(result, expectedResult);
+            Assert.AreEqual(expectedResult, result);
         }
 
         [TestMethod]
@@ -97,9 +97,9 @@ namespace Calculator.Tests
             decimal result3 = CalculatorNS.Calculator.Calculate(statement3);
 
             // Assert
-            Assert.AreEqual(result, expectedResult);
-            Assert.AreEqual(result2, expectedResult2);
-            Assert.AreEqual(result3, expectedResult3);
+            Assert.AreEqual(expectedResult, result);
+            Assert.AreEqual(expectedResult2, result2);
+            Assert.AreEqual(expectedResult3, result3);
         }
 
         [TestMethod]
@@ -107,13 +107,49 @@ namespace Calculator.Tests
         {
             // Arrange
             string statement = "10 - ( 2 + 3 * ( 7 - 5 ) )";
-            decimal expectedResult = 2;
+            decimal expectedResult = 0;
 
             // Act
             decimal result = CalculatorNS.Calculator.Calculate(statement);
 
             // Assert
-            Assert.AreEqual(result, expectedResult);
+            Assert.AreEqual(expectedResult, result);
+        }
+
+        [TestMethod]
+        public void ExpressionWithDoubleNestedBracket()
+        {
+            // Arrange
+            string statement = "10 - ( 2 + 3 * ( 10 - ( 5 + 3 ) ) )";
+            decimal expectedResult = 0;
+
+            // Act
+            decimal result = CalculatorNS.Calculator.Calculate(statement);
+
+            // Assert
+            Assert.AreEqual(expectedResult, result);
+        }
+
+        [TestMethod]
+        public void ExpressionWithMultipleSeperateBracket()
+        {
+            // Arrange
+            string statement = "( 10 + 2 ) - ( 3 * 3 )";
+            string statement2 = "( 2 * 2 ) - ( 10 + 2 ) - ( 3 * 3 )";
+            string statement3 = "( 2 * 2 ) - ( 10 + 2 ) - ( ( 3 * 3 ) + 2 )";
+            decimal expectedResult = 3;
+            decimal expectedResult2 = -17;
+            decimal expectedResult3 = -19;
+
+            // Act
+            decimal result = CalculatorNS.Calculator.Calculate(statement);
+            decimal result2 = CalculatorNS.Calculator.Calculate(statement2);
+            decimal result3 = CalculatorNS.Calculator.Calculate(statement3);
+
+            // Assert
+            Assert.AreEqual(expectedResult, result);
+            Assert.AreEqual(expectedResult2, result2);
+            Assert.AreEqual(expectedResult3, result3);
         }
     }
 }
