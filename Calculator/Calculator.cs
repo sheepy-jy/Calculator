@@ -8,6 +8,7 @@ namespace CalculatorNS
         public static decimal Calculate(string input)
         {
             decimal result = 0;
+            bool isFirst = true;
             var array = input.Split(" ");
             var currentOperator = "";
             int openBracketCount = 0;
@@ -22,6 +23,7 @@ namespace CalculatorNS
                     if (result == 0 && currentOperator == string.Empty && decimal.TryParse(array[i], out decimal parsedDouble))
                     {
                         result = parsedDouble;
+                        isFirst = false;
                         continue;
                     }
                     if (IsOperator(array[i]))
@@ -30,7 +32,7 @@ namespace CalculatorNS
                         continue;
                     }
                     // Calculate
-                    if (IsOperand(array[i]) && result != 0)
+                    if (IsOperand(array[i]) && !isFirst && currentOperator != string.Empty)
                     {
                         result = CalculateWithOperator(currentOperator, Convert.ToDecimal(array[i]), result);
                         continue;
@@ -40,8 +42,9 @@ namespace CalculatorNS
                 if (array[i] == "(")
                 {
                     openBracketCount += 1;
+                    isFirst = false;
 
-                    // If 1 openBracket, dun add ( into insideBracketExpression
+                    // If not nested bracket, skip adding to insideBracketExpression
                     if (openBracketCount == 1) { continue; }
                 }
 
