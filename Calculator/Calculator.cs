@@ -14,7 +14,7 @@ namespace CalculatorNS
             int indexOpenBracket = Array.LastIndexOf(array, "(");
             if (indexOpenBracket != -1)
             {
-                // specify start index to handle multiple but not nested brackets
+                // Specify start index to handle multiple but not nested brackets
                 int indexCloseBracket = Array.IndexOf(array, ")", indexOpenBracket);
 
                 string insideBracket = "";
@@ -151,13 +151,6 @@ namespace CalculatorNS
         //    return result;
         //}
 
-        /// <summary>
-        /// Calculate based on operator and return result
-        /// </summary>
-        /// <param name="oprator"></param>
-        /// <param name="digit"></param>
-        /// <param name="result"></param>
-        /// <returns></returns>
         private static decimal CalculateWithOperator(string oprator, decimal digit, decimal result)
         {
             switch (oprator)
@@ -195,6 +188,5 @@ namespace CalculatorNS
         {
             return Decimal.TryParse(operand, out decimal parsedOperand);
         }
-
     }
 }
