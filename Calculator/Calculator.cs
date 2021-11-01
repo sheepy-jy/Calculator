@@ -7,76 +7,149 @@ namespace CalculatorNS
     {
         public static decimal Calculate(string input)
         {
-            decimal result = 0;
-            bool isFirst = true;
-            var array = input.Split(" ");
+            string[] array = input.Split(" ");
             var currentOperator = "";
-            int openBracketCount = 0;
-            int closeBracketCount = 0;
-            string insideBracketExpression = "";
+            decimal finalResult = 0;
 
+            int indexOpenBracket = Array.LastIndexOf(array, "(");
+            if (indexOpenBracket != -1)
+            {
+                // specify start index to handle multiple but not nested brackets
+                int indexCloseBracket = Array.IndexOf(array, ")", indexOpenBracket);
+
+                string insideBracket = "";
+                for (int i = indexOpenBracket + 1; i < indexCloseBracket; i++)
+                {
+                    insideBracket += array[i] + (i + 1 == indexCloseBracket ? "" : " ");
+                }
+                decimal bracketResult = Calculate(insideBracket);
+                string calculatedPart = "( " + insideBracket + " )";
+                string newInput = input.Replace(calculatedPart, bracketResult.ToString());
+
+                return Calculate(newInput);
+            }
+
+            int indexMultiply = Array.IndexOf(array, "*");
+            if (indexMultiply != -1)
+            {
+                decimal firstArg = Convert.ToDecimal(array[indexMultiply - 1]);
+                decimal secondArg = Convert.ToDecimal(array[indexMultiply + 1]);
+
+                decimal result = firstArg * secondArg;
+                string sumParts = firstArg.ToString() + " * " + secondArg.ToString();
+                string newInput = input.Replace(sumParts, result.ToString());
+
+                return Calculate(newInput);
+            }
+
+            int indexDivide = Array.IndexOf(array, "/");
+            if (indexDivide != -1)
+            {
+                decimal firstArg = Convert.ToDecimal(array[indexDivide - 1]);
+                decimal secondArg = Convert.ToDecimal(array[indexDivide + 1]);
+
+                decimal divideResult = firstArg / secondArg;
+                string sumParts = firstArg.ToString() + " / " + secondArg.ToString();
+                string newInput = input.Replace(sumParts, divideResult.ToString());
+
+                return Calculate(newInput);
+            }
+
+            // Calculation after all brackets & multiply/divide is solved
             for (int i = 0; i < array.Length; i++)
             {
-                // If not inside bracket, do calculation
-                if (openBracketCount == 0)
+                if (finalResult == 0 && currentOperator == string.Empty && decimal.TryParse(array[i], out decimal parsedDecimal))
                 {
-                    if (result == 0 && currentOperator == string.Empty && decimal.TryParse(array[i], out decimal parsedDouble))
-                    {
-                        result = parsedDouble;
-                        isFirst = false;
-                        continue;
-                    }
-                    if (IsOperator(array[i]))
-                    {
-                        currentOperator = array[i];
-                        continue;
-                    }
-                    // Calculate
-                    if (IsOperand(array[i]) && !isFirst && currentOperator != string.Empty)
-                    {
-                        result = CalculateWithOperator(currentOperator, Convert.ToDecimal(array[i]), result);
-                        continue;
-                    }
+                    finalResult = parsedDecimal;
+                    continue;
                 }
-
-                if (array[i] == "(")
+                if (IsOperator(array[i]))
                 {
-                    openBracketCount += 1;
-                    isFirst = false;
-
-                    // If not nested bracket, skip adding to insideBracketExpression
-                    if (openBracketCount == 1) { continue; }
+                    currentOperator = array[i];
+                    continue;
                 }
-
-                if (array[i] == ")")
+                if (IsOperand(array[i]) && currentOperator != string.Empty)
                 {
-                    closeBracketCount += 1;
-                    // If openBracketCount == closeBracketCount, then run recursion to calculate
-                    if (openBracketCount == closeBracketCount)
-                    {
-                        decimal innerBracketResult = Calculate(insideBracketExpression);
-
-                        // If else to Handle if bracket hits before any operator is assigned
-                        result = currentOperator == "" ?
-                            innerBracketResult :
-                            CalculateWithOperator(currentOperator, innerBracketResult, result);
-
-                        // Remove bracket count since out of bracket now
-                        openBracketCount -= 1;   
-                        closeBracketCount -= 1;
-                        // Have to clear expression to handle multiple seperate nested expression
-                        insideBracketExpression = "";   
-                    }
-                }
-
-                // If inside bracket, add expression to insideBracketExpression
-                if (openBracketCount != 0)
-                {
-                    insideBracketExpression += " " + array[i];
+                    finalResult = CalculateWithOperator(currentOperator, Convert.ToDecimal(array[i]), finalResult);
+                    continue;
                 }
             }
-            return result;
+
+            return finalResult;
         }
+
+        //public static decimal Calculate(string input)
+        //{
+        //    decimal result = 0;
+        //    bool isFirst = true;
+        //    var array = input.Split(" ");
+        //    var currentOperator = "";
+        //    int openBracketCount = 0;
+        //    int closeBracketCount = 0;
+        //    string insideBracketExpression = "";
+
+        //    for (int i = 0; i < array.Length; i++)
+        //    {
+        //        // If not inside bracket, do calculation
+        //        if (openBracketCount == 0)
+        //        {
+        //            if (result == 0 && currentOperator == string.Empty && decimal.TryParse(array[i], out decimal parsedDouble))
+        //            {
+        //                result = parsedDouble;
+        //                isFirst = false;
+        //                continue;
+        //            }
+        //            if (IsOperator(array[i]))
+        //            {
+        //                currentOperator = array[i];
+        //                continue;
+        //            }
+        //            // Calculate
+        //            if (IsOperand(array[i]) && !isFirst && currentOperator != string.Empty)
+        //            {
+        //                result = CalculateWithOperator(currentOperator, Convert.ToDecimal(array[i]), result);
+        //                continue;
+        //            }
+        //        }
+
+        //        if (array[i] == "(")
+        //        {
+        //            openBracketCount += 1;
+        //            isFirst = false;
+
+        //            // If not nested bracket, skip adding to insideBracketExpression
+        //            if (openBracketCount == 1) { continue; }
+        //        }
+
+        //        if (array[i] == ")")
+        //        {
+        //            closeBracketCount += 1;
+        //            // If openBracketCount == closeBracketCount, then run recursion to calculate
+        //            if (openBracketCount == closeBracketCount)
+        //            {
+        //                decimal innerBracketResult = Calculate(insideBracketExpression);
+
+        //                // If else to Handle if bracket hits before any operator is assigned
+        //                result = currentOperator == "" ?
+        //                    innerBracketResult :
+        //                    CalculateWithOperator(currentOperator, innerBracketResult, result);
+
+        //                // Remove bracket count since out of bracket now
+        //                openBracketCount -= 1;   
+        //                closeBracketCount -= 1;
+        //                // Have to clear expression to handle multiple seperate nested expression
+        //                insideBracketExpression = "";   
+        //            }
+        //        }
+
+        //        // If inside bracket, add expression to insideBracketExpression
+        //        if (openBracketCount != 0)
+        //        {
+        //            insideBracketExpression += " " + array[i];
+        //        }
+        //    }
+        //    return result;
+        //}
 
         /// <summary>
         /// Calculate based on operator and return result
@@ -122,5 +195,6 @@ namespace CalculatorNS
         {
             return Decimal.TryParse(operand, out decimal parsedOperand);
         }
+
     }
 }

@@ -107,7 +107,7 @@ namespace Calculator.Tests
         {
             // Arrange
             string statement = "10 - ( 2 + 3 * ( 7 - 5 ) )";
-            decimal expectedResult = 0;
+            decimal expectedResult = 2;
 
             // Act
             decimal result = CalculatorNS.Calculator.Calculate(statement);
@@ -121,7 +121,7 @@ namespace Calculator.Tests
         {
             // Arrange
             string statement = "10 - ( 2 + 3 * ( 10 - ( 5 + 3 ) ) )";
-            decimal expectedResult = 0;
+            decimal expectedResult = 2;
 
             // Act
             decimal result = CalculatorNS.Calculator.Calculate(statement);
